@@ -21,7 +21,7 @@ class Encryption extends BaseConfig
      * You need to ensure it is long enough for the cipher and mode you plan to use.
      * See the user guide for more info.
      */
-    public string $key = '';
+    public string $key = 'a47862e8aa5c65d9dfac487a076c9f7f47013aff7b7926aadfcc72885555f08d';
 
     /**
      * --------------------------------------------------------------------------

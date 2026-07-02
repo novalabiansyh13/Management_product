@@ -13,10 +13,10 @@ class App extends BaseConfig
      *
      * URL to your CodeIgniter root. Typically, this will be your base URL,
      * WITH a trailing slash:
-     *
+     *                          
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://10.21.1.125/management_product/';
+    public string $baseURL = 'http://10.21.1.233/management_product/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -133,7 +133,7 @@ class App extends BaseConfig
      * @see https://www.php.net/manual/en/timezones.php for list of timezones
      *      supported by PHP.
      */
-    public string $appTimezone = 'UTC';
+    public string $appTimezone = 'Asia/Jakarta';
 
     /**
      * --------------------------------------------------------------------------

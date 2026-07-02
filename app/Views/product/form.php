@@ -51,10 +51,14 @@ function submitProduct() {
         data: $('#formProduct').serialize(),
         success: function(res) {
             if (res.status === 'success') {
-                $('#modalForm').modal('hide');
-                $('#tblProduct').DataTable().ajax.reload(null, false);
+                if(formType === 'add'){
+                    $('#modalForm').modal('hide');
+                    $('#tblProduct').DataTable().ajax.reload(null, false);
+                } else {
+                    window.location.href = '<?= site_url('products') ?>';
+                }
             } else {
-                alert('Gagal menyimpan data');
+                Swal.fire('Gagal', res.message, 'error');
             }
         }
     });

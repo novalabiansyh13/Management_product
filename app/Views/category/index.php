@@ -1,0 +1,162 @@
+<?= $this->extend('template/v_header') ?>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Data Kategori</h5>
+        <div>
+            <a href="<?= site_url('category/printPdf') ?>" id="btnPrintPdf" class="btn btn-success btn-sm me-2" target="_blank">
+                Print PDF
+            </a>
+            <button class="btn btn-primary btn-sm me-2" onclick="openForm('<?= site_url('category/form') ?>')">
+                Tambah Kategori
+            </button>
+        </div>
+    </div>
+    <br>
+
+    <div id="alertBox", class="alert d-none" role="alert"></div>
+    <table id="tblCategory" class="table table-bordered table-striped w-100">
+        <thead>
+            <tr>
+                <th style="width: 20px;">No</th>
+                <th>Nama Kategori</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalForm" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Form Kategori</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const printPdfBaseUrl = "<?= site_url('category/printPdf') ?>";
+    let tbl;
+    $(function () {
+        tbl = $('#tblCategory').DataTable({
+            processing: true,
+            serverSide: true,
+            language: {
+                searchPlaceholder: 'Cari nama kategori...'
+            },
+            order: [1, 'asc'],
+            ajax: {
+                url: "<?= base_url('category/datatable') ?>",
+                type: "POST",
+                data: function(d) {
+                    d.<?= csrf_token() ?> = '<?= csrf_hash() ?>';
+                }
+            },
+            columns: [
+                { data: 'no', orderable: false, searchable: false }, //data ini dapat darimana isinya
+                { data: 'name', name: 'name' },
+                { data: 'aksi', orderable: false, searchable: false }
+            ],
+            error: function(xhr, error, thrown) {
+                console.error('DataTables error:', xhr.responseText);
+                alert('Terjadi kesalahan saat memuat data. Silakan refresh halaman.');
+            }
+        });
+    });
+
+function showAlert(message, type = '') {
+    $('#alertModalContent')
+        .removeClass('border-success border-danger');
+        
+    $('#alertModalTitle')
+    .removeClass('text-success text-danger');
+
+    let title = '';
+    if (type === 'success'){
+        title = 'Berhasil';
+        $('#alertModalContent').addClass('border-success');
+        $('#alertModalTitle').addClass('text-success');
+    } else if (type === 'error'){
+        title = 'Gagal';
+        $('#alertModalContent').addClass('border-danger');
+        $('#alertModalTitle').addClass('text-danger');
+    }
+
+    $('#alertModalTitle').text(title);
+    $('#alertModalBody').text(message);
+    $('#alertModal').modal('show');
+}
+
+function openForm(url){ //url dapat darimana?
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(res){
+            try {
+                let data;
+                if (typeof res === 'string'){
+                    data = JSON.parse(res);
+                } else {
+                    data = res;
+                }
+
+                $('#modalBody').html(data.view);
+                $('#modalForm').modal('show');
+            } catch (e) {
+                console.error('Error parsing response:', e);
+                alert('Terjadi kesalahan pada form');
+            }
+        },
+        error: function(xhr, status, error){
+            console.error('AJAX error:', xhr.responseText);
+            alert('Gagal memuat form. Error: ' + error);
+        }
+    });
+}
+
+function editForm(id){ //id dapat darimana
+    openForm('<?= site_url('category/form/') ?>' + id);
+}
+
+function deleteData(id){
+    if (confirm("apakah anda yakin menghapus data ini?")) {
+        $.ajax({
+            url: '<?= site_url('category/delete/') ?>'+ id,
+            type: 'POST',
+            data: {
+                <?= csrf_token() ?>: '<?= csrf_hash() ?>'
+            },
+            success: function (res){
+                try {
+                    let data;
+                    if(typeof res === 'string') {
+                        data = JSON.parse(res);
+                    } else {
+                        data = res;
+                    }
+
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        tbl.ajax.reload();
+                    } else {
+                        showAlert(data.message, 'error');
+                    }
+                } catch (e){
+                    console.error('Error parsing response', e);
+                    alert('terjadi kesalahan saat menghapus.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', xhr.responseText);
+                alert('Gagal menghapus kategori. Error: ' + error);
+            }
+        });
+    }
+}
+</script>

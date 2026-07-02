@@ -1,60 +1,159 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Produk</title>
-    <link rel="stylesheet" href="<?= base_url('assets/css/select2.min.css') ?>">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-</head>
-<body>
-
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Data Produk</h5>
-        <div>
-            <button class="btn btn-primary btn-sm me-2"
-                onclick="openForm('<?= site_url('products/form') ?>')">
-                Tambah Produk
+<?= $this->include('template/v_header') ?>
+<div class="main-content content margin-t-4">
+<div class="card rounded shadow-sm w-100 p-x">
+    <div class="card rounded shadow-sm w-100 p-x">
+        <div class="card-header dflex align-center justify-end">
+            <button class="btn btn-info dflex align-center margin-r-2" onclick="openFilter()">
+                <i class="bx bx-filter-alt margin-r-2"></i>
+                <span class="fw-normal fs-7">Filter</span>
             </button>
-
-            <button onclick="logout()" class="btn btn-danger btn-sm">
-                Logout
+            <button class="btn btn-primary dflex align-center" onclick="return modalForm('Tambah Product', 'modal-lg', '<?= getURL('products/forms') ?>')">
+                <i class="bx bx-plus-circle margin-r-2"></i>
+                <span class="fw-normal fs-7">Tambah</span>
             </button>
         </div>
+        <div class="card-body">
+            <div style="margin-block: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(108, 108, 108, 0.25);display:none" id="filter-tab">
+                <div class="row" style="width: 75%;" id="tab-filter">
+                    <div class="col-2 row" style="padding-right: 6px;">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>From Date</label>
+                                <input type="date" class="form-input fs-7" id="fromdate" value="<?= date('Y-m-01') ?>">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>To Date</label>
+                                <input type="date" class="form-input fs-7" id="todate" value="<?= date('Y-m-t') ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 row" style="padding-right: 6px;">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <select id="category" name="category" class="form-input fs-7"></select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div style="width: max-content !important; padding-top: 6px;" class="margin-r-2 dflex align-center">
+                                <button class="btn btn-warning dflex align-center margin-r-2" type="button" onclick="setupTable('reset')" style="width: max-content;">
+                                    <i class="bx bx-revision margin-r-2"></i>
+                                </button>
+                                <button class="btn btn-primary dflex align-center margin-r-2" type="button" onclick="setupTable()" style="width: max-content;">
+                                    <i class="bx bx-filter-alt margin-r-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="exportProgress" style="display:none;" class="mb-3">
+            <div class="small mb-1">
+                Exporting: <span id="progressText">0%</span>
+            </div>
+            <div style="width:100%; background:#ddd; height:8px; border-radius:4px;">
+                <div id="progressBar"
+                    style="width:0%; height:100%; background:#4CAF50; border-radius:4px;">
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="table-responsive margin-t-14p">
+            <table id="tblProduct" class="table table-bordered table-striped w-100">
+                <thead>
+                    <tr>
+                        <th width="10px">No</th>
+                        <th>Nama</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                        <th width="50px">Created_by</th>
+                        <th>Created_at</th>
+                        <th width="125px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
-    <div class="col-md-4">
-        <select id="categoryFilter" class="form-select">
-            <option value="">Semua Kategori</option>
-                <?php 
-                    foreach ($categories as $cat): ?>
-            <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <br>
+    <!-- <div class="flex-grow-1">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small">From Date</label>
+                <input type="date" id="fromDate" class="form-control form-control-sm" value="<?= date('Y-m-01') ?>">
+            </div>
 
-    <table id="tblProduct" class="table table-bordered table-striped w-100">
-        <thead>
-            <tr>
-                <th width="10px">No</th>
-                <th>Nama</th>
-                <th>Kategori</th>
-                <th>Harga</th>
-                <th>Stok</th>
-                <th width="125px">Aksi</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+            <div class="col-md-3">
+                <label class="form-label small">To Date</label>
+                <input type="date" id="toDate" class="form-control form-control-sm" value="<?= date('Y-m-t') ?>">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small">Kategori</label>
+                <select id="categoryFilter" class="form-select form-select-sm">
+                    <option value="">Semua Kategori</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-2">
+            <button id="btnFilter" class="btn btn-primary btn-sm px-4">
+                Filter
+            </button>
+            <button id="btnReset" class="btn btn-secondary btn-sm px-4">
+                Reset
+            </button>
+        </div>
+
+    </div> -->
+
+    <!-- <div class="d-flex gap-2 flex-shrink-0 align-items-center mt-4">
+        <button class="btn btn-secondary btn-sm"
+            onclick="openImportForm('<?= site_url('products/import') ?>')">
+            Import Excel
+        </button>
+
+        <button type="button" id="btnExportExcel" class="btn btn-warning btn-sm">
+            Export Excel
+        </button>
+
+        <a href="<?= site_url('products/printPdf') ?>?category="
+           id="btnPrintPdf"
+           class="btn btn-success btn-sm"
+           target="_blank">
+            Print PDF
+        </a>
+
+        <button class="btn btn-primary btn-sm"
+            onclick="openForm('<?= site_url('products/form') ?>')">
+            Tambah Produk
+        </button>
+    </div> -->
+</div>
+<div id="exportProgress" style="display:none;" class="mb-3">
+    <div class="small mb-1">
+        Exporting: <span id="progressText">0%</span>
+    </div>
+    <div style="width:100%; background:#ddd; height:8px; border-radius:4px;">
+        <div id="progressBar"
+            style="width:0%; height:100%; background:#4CAF50; border-radius:4px;">
+        </div>
+    </div>
+</div>
+<br>
+
+    
 </div>
 
-<!-- MODAL -->
+<!-- MODAL FORM-->
 <div class="modal fade" id="modalForm" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title">Form Produk</h6>
+                <h6 class="modal-title"></h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="modalBody"></div>
@@ -62,33 +161,75 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="<?= base_url('assets/js/select2.min.js') ?>"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!--MODAL UPLOAD-->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Dropzone area -->
+        <form action="/files/upload" class="dropzone" id="myDropzone"></form>
+        <div class="modal-footer d-flex justify-content-end">
+            <button id="btnUpload" class="btn btn-primary">Upload</button>
+        </div>
 
+        <hr>
+        <!-- Datatable files -->
+        <table id="datatableFiles" class="table table-bordered table-striped" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama File</th>
+              <th>File Directory</th>
+              <th>Created At</th>
+              <th>Created By</th>
+              <th style="width: 120px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?= $this->include('template/v_footer') ?>
 <script>
+const printPdfBaseUrl = "<?= site_url('products/printPdf') ?>";
+let currentFromDate = '';
+let currentToDate = '';
+let currentCategory = '';
 let tbl;
-$(function () {
+let currentProductId = null;
+let isExporting = false;
+let exportBtnText = $('#btnExportExcel').text();
+let exportTimeout = null;
+let isUploadCanceled = false; 
+$(document).ready(function () {
+    initCategorySelect2Filter();
     tbl = $('#tblProduct').DataTable({
         processing: true,
         serverSide: true,
         language: {
             searchPlaceholder: 'cari nama produk...'
         },
-        order: [[1, 'asc']],
+        order: [],
         ajax: {
-            url: "<?= site_url('products/datatable') ?>",
+            url: "<?= base_url('products/datatable') ?>",
             type: "POST",
             data: function(d) {
-                d.categoryFilter = $('#categoryFilter').val();
+                d.category = currentCategory;
+                d.fromDate = currentFromDate;
+                d.toDate = currentToDate;
                 d.<?= csrf_token() ?> = '<?= csrf_hash() ?>';
             }
         },
         columns: [
             { data: 'no', orderable: false, searchable: false },
-            { data: 'name', name: 'p.name' },
+            { data: 'name', name: 'p.name', orderable: false },
             { data: 'category', name: 'c.name' },
             {
                 data: 'price',
@@ -100,18 +241,50 @@ $(function () {
             {
                 data: 'stock',
                 name: 'p.stock',
-                render: function(data) {
-                    return data;
-                }, searchable: false
+                searchable: false
             },
+            { data: 'created_by', name: 'u.username',
+            render: function(data) {
+                return data ?? '-';
+            }
+            },
+            { data: 'created_at', name: 'p.created_at'},
             { data: 'aksi', orderable: false, searchable: false }
         ],
+        drawCallback: function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        },
         error: function(xhr, error, thrown) {
             console.error('DataTables error:', xhr.responseText);
             alert('Terjadi kesalahan saat memuat data. Silakan refresh halaman.');
         }
     });
 });
+
+function showALert(message, type = ''){
+    $('#alertModalContent')
+        .removeClass('border-success border-danger');
+    $('#alertModalTitle')
+        .removeClass('text-success text-danger');
+
+    let title = '';
+    if (type === 'success'){
+        title = 'Berhasil';
+        $('#alertModalContent').addClass('border-success');
+        $('#alertModalTitle').addClass('text-success');
+    } else if (type === 'error'){
+        title = 'Gagal';
+        $('#alertModalContent').addClass('border-danger');
+        $('#alertModalTitle').addClass('text-danger');
+    }
+
+    $('#alertModalTitle').text(title);
+    $('#alertModalBody').text(message);
+    $('#alertModal').modal('show');
+}
 
 function openForm(url) {
     $.ajax({
@@ -127,6 +300,7 @@ function openForm(url) {
                 }
 
                 $('#modalBody').html(data.view);
+                $('#modalForm .modal-title').text(data.title);
                 $('#modalForm')
                 .off('shown.bs.modal')
                 .on('shown.bs.modal', function () {
@@ -146,48 +320,212 @@ function openForm(url) {
 }
 
 function editForm(id) {
-    openForm('<?= site_url('products/form/') ?>' + id);
+    window.location.href = '<?= site_url('products/edit/') ?>' + id;
+}
+
+function openImportForm(url){
+    $('#modalForm').off('shown.bs.modal');
+    $('#modalBody').empty();
+    $('#modalForm .modal-title').text('Import Excel');
+
+    $.ajax({
+        url : url,
+        type : 'GET',
+        success : function(res) {
+            $('#modalBody').html(res);
+            $('#modalForm').modal('show');
+        },
+        error: function(xhr){
+            console.error(xhr.responseText);
+            alert('Terjadi kesalahan');
+        }
+    });
 }
 
 function deleteData(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Data produk ini akan dihapus permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.showLoading();
+
+            $.ajax({
+                url: '<?= site_url('products/delete/') ?>' + id,
+                type: 'POST',
+                data: {
+                    "<?= csrf_token() ?>": "<?= csrf_hash() ?>"
+                },
+                success: function(res) {
+                    let data = (typeof res === 'string') ? JSON.parse(res) : res;
+                    
+                    if (data.status === 'success') {
+                        Swal.fire('Terhapus!', data.message, 'success');
+                        $('#tblProduct').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire('Gagal!', data.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire('Error!', 'Terjadi kesalahan sistem: ' + error, 'error');
+                }
+            });
+        }
+    });
+}
+
+$('#categoryFilter, #fromDate, #toDate').on('change', function() {
+    currentCategory = $('#categoryFilter').val();
+    currentFromDate = $('#fromDate').val();
+    currentToDate = $('#toDate').val();
+
+    let url = printPdfBaseUrl + `?category=${currentCategory}&fromDate=${currentFromDate}&toDate=${currentToDate}`;
+    $('#btnPrintPdf').attr('href', url);
+});
+
+$('#btnFilter').on('click', function(){
+    currentCategory = $('#categoryFilter').val();
+    currentFromDate = $('#fromDate').val();
+    currentToDate = $('#toDate').val();
+
+    tbl.ajax.reload(null, true);
+
+    let url = printPdfBaseUrl + `?category=${currentCategory}&from=${currentFromDate}&to=${currentToDate}`;
+
+    $('#btnPrintPdf').attr('href', url);
+});
+
+$('#btnReset').on('click', function(){
+    currentCategory = '';
+    currentFromDate = '';
+    currentToDate = '';
+
+    $('#fromDate').val('');
+    $('#toDate').val('');
+    $('#categoryFilter').val(null).trigger('change');
+
+    tbl.ajax.reload(null, true);
+
+    $('#btnPrintPdf').attr('href', printPdfBaseUrl);
+});
+
+$('#btnExportExcel').on('click', function () {
+    if (isExporting) return;
+
+    isExporting = true;
+    const $btn = $(this);
+    exportBtnText = $btn.text();
+    $btn.prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm me-1"></span> sedang memproses...');
+
+    $('#exportProgress').show();
+    $('#progressBar').css('width', '0%');
+    $('#progressText').text('0%');
+
+    let limit = 100;
+    let offset = 0;
+    let allData = [];
+    let category = currentCategory;
+    let fromDate = currentFromDate;
+    let toDate = currentToDate;
+    let totalData = 0;
+
+    $.getJSON("<?= site_url('products/exportExcelCount') ?>",
+    {
+        category, fromDate, toDate
+    }, 
+    function (res) {
+        totalData = res.total;
+        
+        if (totalData === 0) {
+            exportExcel([]);
+            return;
+        }
+        loadChunk();
+    });
+
+    function loadChunk() {
+        console.log('Chunk offset:', offset);
+
+        $.getJSON(
+            "<?= site_url('products/exportExcelChunk') ?>",
+            { limit, offset, category, fromDate, toDate },
+            function (res) {
+                if (res.length > 0) {
+                    allData = allData.concat(res);
+                    offset += res.length;
+
+                    let persen = Math.round((offset / totalData) * 100);
+                    persen = Math.min(persen, 100);
+                    $('#progressBar').css('width', persen + '%');
+                    $('#progressText').text(persen + '%');
+
+                    loadChunk();
+                } else {
+                    $('#progressBar').css('width', '100%');
+                    $('#progressText').text('100%');
+
+                    setTimeout(() => {
+                        exportExcel(allData);
+                    }, 300);
+                }
+            }
+        );
+    }
+
+    function exportExcel(data) {
+        
+        exportTimeout = setTimeout(() => {
+            finishExport(); // hide loading, enable button
+        }, 2000);
+
         $.ajax({
-            url: '<?= site_url('products/delete/') ?>' + id,
+            url: "<?= site_url('products/exportExcel') ?>",
             type: 'POST',
             data: {
+                rows: JSON.stringify(data),
+                category: currentCategory,
+                fromDate: currentFromDate,
+                toDate: currentToDate,
                 <?= csrf_token() ?>: '<?= csrf_hash() ?>'
             },
-            success: function(res) {
-                try {
-                    let data;
-                    if (typeof res === 'string') {
-                        data = JSON.parse(res);
-                    } else {
-                        data = res;
-                    }
-                    if (data.status === 'success') {
-                        alert('Produk berhasil dihapus');
-                        tbl.ajax.reload();
-                    } else {
-                        alert('Gagal menghapus produk');
-                    }
-                } catch (e) {
-                    console.error('Error parsing response:', e);
-                    alert('Terjadi kesalahan saat menghapus.');
-                }
+            xhrFields: {
+                responseType: 'blob'
             },
-            error: function(xhr, status, error) {
-                console.error('AJAX error:', xhr.responseText);
-                alert('Gagal menghapus produk. Error: ' + error);
+            success: function (blob) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Data_Produk.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            },
+            error: function (xhr) {
+                alert('Gagal export excel');
+                console.error(xhr);
+            },
+            complete: function(){
+                clearTimeout(exportTimeout);
+                finishExport();         
             }
         });
     }
-}
 
-$('#categoryFilter').on('change', function() {
-        currentCategory = $(this).val();
-        tbl.ajax.reload();
-    });
+    function finishExport(){
+        isExporting = false;
+        $btn.prop('disabled', false)
+            .text(exportBtnText);
+        $('#exportProgress').hide();
+    }
+});
 
 function initCategorySelect2(data) {
 
@@ -210,25 +548,202 @@ function initCategorySelect2(data) {
     }
   });
 
-  // mode edit
+  //kalau form edit
   if (data.form_type === 'edit') {
     let opt = new Option(
-      data.row.category_name,
-      data.row.category_id,
-      true,
-      true
+      data.row.category_name, //text
+      data.row.category_id, //value
+      true, //default
+      true //selected
     );
     $('#category_id').append(opt).trigger('change');
   }
 }
 
-function logout() {
-    if (confirm('Yakin ingin logout?')) {
-        alert('Logout berhasil');
-        window.location.href = "<?= site_url('logout') ?>";
-    }
+function initCategorySelect2Filter(){
+    $('#categoryFilter').select2({
+        placeholder: 'Semua Kategori',
+        allowClear: true,
+        width: '100%',
+        ajax: {
+            url: "<?= site_url('products/categoryList') ?>",
+            type: 'POST',
+            dataType: 'json',
+            delay: 250,
+            data: function (params){
+                return {
+                    search: params.term,
+                    <?= csrf_token() ?>: '<?= csrf_hash() ?>'
+                };
+            },
+            processResults: function (res){
+                return {
+                    results: res.items
+                };
+            }
+        }
+    });
+}
+
+function uploadForm(productId, productName) {
+    currentProductId = productId;
+
+    $('#uploadModal').modal('show');
+    $('#uploadModalTitle').text('Upload File - ' + productName);
+    $('#datatableFiles').DataTable().ajax.reload();
+}
+
+    $(document).ready(function () {
+        $('#datatableFiles').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "<?= base_url('files/datatable') ?>",
+                type: 'POST',
+                data: function (d) {
+                    d.refid = currentProductId;
+                }
+            },
+            order: [],
+            columns: [
+                { data: 'no', orderable: false, searchable: false },
+                { data: 'filerealname' },
+                { data: 'filedirectory' },
+                { data: 'created_date' },
+                { data: 'created_by' },
+                { data: 'aksi', orderable: false, searchable: false }
+            ]
+        });
+    });
+
+    Dropzone.autoDiscover = false;
+
+        let myDropzone = new Dropzone("#myDropzone", {
+            url: "<?= base_url('files/upload') ?>",
+            autoProcessQueue: false,
+            paramName: "file",
+            maxFilesize: 50,
+            chunking: true,
+            forceChunking: true,
+            chunkSize: 2000000, 
+            retryChunks: true,
+            retryChunksLimit: 3,
+            parallelUploads: 1, 
+            addRemoveLinks: true,
+            init: function () {
+                let dz = this;
+                let modalEl = $('#uploadModal');
+                let btnUpload = $("#btnUpload");
+                let btnClose = modalEl.find('.btn-close');
+                let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+                dz.on("sending", function (file, xhr, formData) {
+                    isUploadCanceled = false;
+                    formData.append("refid", currentProductId);
+                    formData.append("<?= csrf_token() ?>", "<?= csrf_hash() ?>");
+
+                    bsModal._config.backdrop = 'static';
+                    bsModal._config.keyboard = false;
+
+                    btnUpload.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Uploading...');
+                    btnClose.hide();
+                });
+
+                dz.on("canceled", function(file) {
+                    isUploadCanceled = true;
+                    $.post("<?= base_url('files/cleanup') ?>", {
+                        dzuuid: file.upload.uuid,
+                        "<?= csrf_token() ?>": "<?= csrf_hash() ?>"
+                    });
+
+                    btnUpload.prop('disabled', false).text('Upload');
+                    btnClose.show();
+                    
+                    Swal.fire('Dibatalkan', 'Upload file telah dihentikan.', 'info');
+                });
+
+                dz.on("success", function (file, response) {
+                    $('#datatableFiles').DataTable().ajax.reload(null, false);
+
+                    if (dz.getQueuedFiles().length > 0){
+                        dz.processQueue();
+                    }
+                });
+
+                dz.on("queuecomplete", function () {
+                    bsModal._config.backdrop = true;
+                    bsModal._config.keyboard = true;
+                    
+                    btnUpload.prop('disabled', false).text('Upload');
+                    btnClose.show();
+
+                    dz.removeAllFiles(true);
+                    if (!isUploadCanceled){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Upload Selesai',
+                            text: 'Semua file telah diupload.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+
+                dz.on("error", function(file, message) {
+                    isUploadCanceled = true;
+                    Swal.fire('Gagal', 'Terjadi kesalahan: ' + message, 'error');
+                    btnUpload.prop('disabled', false).text('Upload');
+                    btnClose.show();
+                });
+
+                btnUpload.on("click", function() {
+                    if (dz.getQueuedFiles().length > 0) {
+                        dz.processQueue();
+                    } else {
+                        Swal.fire('Info', 'Pilih File terlebih dahulu!', 'info');
+                    }
+                });
+            }
+        });
+  
+    function deleteFile(fileId) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "File yang dihapus tidak bisa dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "<?= base_url('files/delete') ?>/" + fileId,
+                type: "POST",
+                data: { "<?= csrf_token() ?>": "<?= csrf_hash() ?>" },
+                success: function(res) {
+                    if (res.status === 'success') {
+                        Swal.fire('Terhapus!', res.message, 'success');
+                        $('#datatableFiles').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire('Gagal', res.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+                }
+            });
+        }
+    });
+}
+
+function setupTable(reset = '') {
+    if (reset === 'reset') {
+        $('#fromdate').val("<?= date('Y-m-01') ?>");
+        $('#todate').val("<?= date('Y-m-t') ?>");
+        $('#category').val(null).trigger('change');
+    } 
+    tbl.ajax.reload();
 }
 </script>
-
-</body>
-</html>
