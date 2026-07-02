@@ -26,10 +26,6 @@
         }
 
         public function index(){
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
-
             return view('product/index', [
                 'title' => 'Data Produk',
                 'categories' => $this->categoryModel->getForSelect()
@@ -38,8 +34,6 @@
 
         public function datatable()
         {
-            $this->checkLogin();
-
             $filter = [
                 'category' => $this->request->getPost('category'),
                 'fromDate' => $this->request->getPost('fromDate'),
@@ -97,8 +91,6 @@
         }
 
         public function add(){
-            $this->checkLogin();
-
             $name = $this->request->getPost('name');
             $category = $this->request->getPost('category_id');
             $price = $this->request->getPost('price');
@@ -144,8 +136,6 @@
         }
 
         public function update($id){
-            $this->checkLogin();
-
             $name = $this->request->getPost('name');
             $category = $this->request->getPost('category_id');
             $price = $this->request->getPost('price');
@@ -189,7 +179,6 @@
         }
 
         public function delete($id){
-            $this->checkLogin();
 
             $this->db->transBegin();
 
@@ -212,10 +201,6 @@
 
         public function forms()
         {
-            if ($redirect = $this->checkLogin()) {
-                return $redirect;
-            }
-
             $row = [];
             $productid = '';
 
@@ -235,9 +220,6 @@
         }
 
         public function edit($id){
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
 
             $row = $this->productModel->getOneWithCategory($id);
             if (!$row){
@@ -253,7 +235,6 @@
         }
 
         public function categoryList(){
-            $this->checkLogin();
 
             $search = $this->request->getPost('search');
 
@@ -272,9 +253,6 @@
         }
 
         public function printPdf(){
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
             $filter = [
                 'category' => $this->request->getGet('category'),
                 'fromDate' => $this->request->getGet('fromDate'),
@@ -419,10 +397,6 @@
 
         public function exportExcel()
         {
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
-
             $filter = [
                 'category' => $this->request->getGet('category'),
                 'fromDate' => $this->request->getGet('fromDate'),
@@ -524,10 +498,6 @@
         }
 
         public function exportExcelChunk(){
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
-
             $limit = (int) $this->request->getGet('limit');
             $offset = (int) $this->request->getGet('offset');
             $filter = [
@@ -544,9 +514,6 @@
         }
 
         public function exportExcelCount(){
-            if($redirect = $this->checkLogin()){
-                return $redirect;
-            }
 
             $filter = [
                 'category' => $this->request->getGet('category'),

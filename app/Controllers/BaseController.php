@@ -25,12 +25,12 @@ abstract class BaseController extends Controller
      * The creation of dynamic property is deprecated in PHP 8.2.
      */
 
-    protected function checkLogin(){
-        if (!session()->get('isLogin')) {
-            return redirect()->to('/');
-            exit;
-    }
-    }
+    // protected function checkLogin(){
+    //     if (!session()->get('isLogin')) {
+    //         return redirect()->to('/');
+    //         exit;
+    // }
+    // }
 
     /**
      * @return void
@@ -46,5 +46,15 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
+    }
+
+    function getPost($key, $cadangan = '')
+    {
+        $post = $this->request->getPost($key);
+        $hasil = $cadangan;
+        if (!empty($post)) {
+            $hasil = $this->request->getPost($key);
+        }
+        return $hasil;
     }
 }

@@ -7,16 +7,15 @@
 
     class Category extends BaseController{
         public function index(){
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
+            // if ($redirect = $this->checkLogin()){
+            //     return $redirect;
+            // }
             return view('category/index',[
                 'title' => 'Data Kategori'
             ]);
         }
 
         public function datatable(){
-            $this->checkLogin();
             $categoryModel = new CategoryModel();
 
             $builder = $categoryModel->datatable();
@@ -38,9 +37,8 @@
             ->toJson(true);
         }
 
-        public function add(){
-            $this->checkLogin();
-
+        public function add()
+        {
             $db = \Config\Database::connect();
             $categoryModel = new CategoryModel();
             $category = $this->request->getPost('name');
@@ -68,8 +66,8 @@
             }
         }
 
-        public function update($id){
-            $this->checkLogin();
+        public function update($id)
+        {
             $db = \Config\Database::connect();
 
             $categoryModel = new CategoryModel();
@@ -95,9 +93,8 @@
             }
         }
 
-        public function delete($id) {
-            $this->checkLogin();
-
+        public function delete($id) 
+        {
             $db = \Config\Database::connect();
             $categoryModel = new CategoryModel();
 
@@ -128,8 +125,6 @@
         }
 
         public function forms ($id = ''){
-            $this->checkLogin();
-
             $categoryModel = new CategoryModel();
 
             $form_type = empty($id) ? 'add' : 'edit';
@@ -156,10 +151,6 @@
         }
 
         public function printPdf(){
-            if ($redirect = $this->checkLogin()){
-                return $redirect;
-            }
-
             $categoryModel = new CategoryModel();
             $category = $categoryModel->datatable()->get()->getResultArray();
             require_once APPPATH . 'ThirdParty/fpdf/fpdf.php';

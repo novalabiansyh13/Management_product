@@ -19,8 +19,6 @@ class File extends BaseController
 
     public function datatable()
     {
-        $this->checkLogin();
-
         $refid = $this->request->getPost('refid');
 
         try {
@@ -67,8 +65,6 @@ class File extends BaseController
 
    public function upload()
     {
-        $this->checkLogin();
-
         $refid = $this->request->getPost('refid');
         $file  = $this->request->getFile('file');
 
@@ -134,7 +130,6 @@ class File extends BaseController
 
     public function download($id)
     {
-        $this->checkLogin();
 
         $file = $this->fileModel->getFileById($id);
 
@@ -158,7 +153,6 @@ class File extends BaseController
     }
 
     public function delete($id){
-        $this->checkLogin();
 
         $file = $this->fileModel->getFileById($id);
 

@@ -77,3 +77,22 @@ defined('EXIT_USER_INPUT')     || define('EXIT_USER_INPUT', 7);     // invalid u
 defined('EXIT_DATABASE')       || define('EXIT_DATABASE', 8);       // database error
 defined('EXIT__AUTO_MIN')      || define('EXIT__AUTO_MIN', 9);      // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125);    // highest automatically-assigned error code
+
+// Dynamic URL
+$base = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://' . $_SERVER['HTTP_HOST'] : 'http://' . $_SERVER['HTTP_HOST'];
+$compo_view = 1;
+$compo_add = 2;
+$compo_edit = 3;
+$compo_delete = 4;
+$compo_upload = 5;
+$compo_download = 6;
+$compo_special = 7;
+
+defined('BASE') || define('BASE', $base);
+defined('COMVIEW') || define('COMVIEW', $compo_view);
+defined('COMADD') || define('COMADD', $compo_add);
+defined('COMEDIT') || define('COMEDIT', $compo_edit);
+defined('COMDELETE') || define('COMDELETE', $compo_delete);
+defined('COMUPLOAD') || define('COMUPLOAD', $compo_upload);
+defined('COMDOWNLOAD') || define('COMDOWNLOAD', $compo_download);
+defined('COMSPECIAL') || define('COMSPECIAL', $compo_special);

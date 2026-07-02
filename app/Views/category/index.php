@@ -1,11 +1,4 @@
-<?= $this->extend('layout/main') ?>
-
-<?= $this->section('css') ?>
-<link rel="stylesheet" href="<?= base_url('assets/css/select2.min.css')?>">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-<?= $this->endSection() ?>
-
-<?= $this->section('content') ?>
+<?= $this->extend('template/v_header') ?>
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Data Kategori</h5>
@@ -45,14 +38,7 @@
         </div>
     </div>
 </div>
-<?= $this->endSection(); ?>
 
-<?= $this->section('js') ?>
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="<?= base_url('assets/js/select2.min.js') ?>"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
     const printPdfBaseUrl = "<?= site_url('category/printPdf') ?>";
@@ -174,4 +160,3 @@ function deleteData(id){
     }
 }
 </script>
-<?= $this->endSection(); ?>

@@ -1,25 +1,94 @@
-<?= $this->extend('layout/main') ?>
-<?= $this->section('css') ?>
-<link rel="stylesheet" href="<?= base_url('assets/css/select2.min.css') ?>">
-<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<?= $this->endSection() ?>
-
-<?= $this->section('content') ?>
-
-<div class="container mt-4">
-<h5 class="mb-3">Data Produk</h5>
-<div class="d-flex align-items-start justify-content-between mb-3 gap-3">
-    <div class="flex-grow-1">
+<?= $this->include('template/v_header') ?>
+<div class="main-content content margin-t-4">
+<div class="card rounded shadow-sm w-100 p-x">
+    <div class="card rounded shadow-sm w-100 p-x">
+        <div class="card-header dflex align-center justify-end">
+            <button class="btn btn-info dflex align-center margin-r-2" onclick="openFilter()">
+                <i class="bx bx-filter-alt margin-r-2"></i>
+                <span class="fw-normal fs-7">Filter</span>
+            </button>
+            <button class="btn btn-primary dflex align-center" onclick="return modalForm('Tambah Product', 'modal-lg', '<?= getURL('products/forms') ?>')">
+                <i class="bx bx-plus-circle margin-r-2"></i>
+                <span class="fw-normal fs-7">Tambah</span>
+            </button>
+        </div>
+        <div class="card-body">
+            <div style="margin-block: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(108, 108, 108, 0.25);display:none" id="filter-tab">
+                <div class="row" style="width: 75%;" id="tab-filter">
+                    <div class="col-2 row" style="padding-right: 6px;">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>From Date</label>
+                                <input type="date" class="form-input fs-7" id="fromdate" value="<?= date('Y-m-01') ?>">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>To Date</label>
+                                <input type="date" class="form-input fs-7" id="todate" value="<?= date('Y-m-t') ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 row" style="padding-right: 6px;">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <select id="category" name="category" class="form-input fs-7"></select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div style="width: max-content !important; padding-top: 6px;" class="margin-r-2 dflex align-center">
+                                <button class="btn btn-warning dflex align-center margin-r-2" type="button" onclick="setupTable('reset')" style="width: max-content;">
+                                    <i class="bx bx-revision margin-r-2"></i>
+                                </button>
+                                <button class="btn btn-primary dflex align-center margin-r-2" type="button" onclick="setupTable()" style="width: max-content;">
+                                    <i class="bx bx-filter-alt margin-r-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="exportProgress" style="display:none;" class="mb-3">
+            <div class="small mb-1">
+                Exporting: <span id="progressText">0%</span>
+            </div>
+            <div style="width:100%; background:#ddd; height:8px; border-radius:4px;">
+                <div id="progressBar"
+                    style="width:0%; height:100%; background:#4CAF50; border-radius:4px;">
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="table-responsive margin-t-14p">
+            <table id="tblProduct" class="table table-bordered table-striped w-100">
+                <thead>
+                    <tr>
+                        <th width="10px">No</th>
+                        <th>Nama</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                        <th width="50px">Created_by</th>
+                        <th>Created_at</th>
+                        <th width="125px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- <div class="flex-grow-1">
         <div class="row g-2 align-items-end">
             <div class="col-md-3">
                 <label class="form-label small">From Date</label>
-                <input type="date" id="fromDate" class="form-control form-control-sm">
+                <input type="date" id="fromDate" class="form-control form-control-sm" value="<?= date('Y-m-01') ?>">
             </div>
 
             <div class="col-md-3">
                 <label class="form-label small">To Date</label>
-                <input type="date" id="toDate" class="form-control form-control-sm">
+                <input type="date" id="toDate" class="form-control form-control-sm" value="<?= date('Y-m-t') ?>">
             </div>
 
             <div class="col-md-4">
@@ -39,9 +108,9 @@
             </button>
         </div>
 
-    </div>
+    </div> -->
 
-    <div class="d-flex gap-2 flex-shrink-0 align-items-center mt-4">
+    <!-- <div class="d-flex gap-2 flex-shrink-0 align-items-center mt-4">
         <button class="btn btn-secondary btn-sm"
             onclick="openImportForm('<?= site_url('products/import') ?>')">
             Import Excel
@@ -62,7 +131,7 @@
             onclick="openForm('<?= site_url('products/form') ?>')">
             Tambah Produk
         </button>
-    </div>
+    </div> -->
 </div>
 <div id="exportProgress" style="display:none;" class="mb-3">
     <div class="small mb-1">
@@ -76,21 +145,7 @@
 </div>
 <br>
 
-    <table id="tblProduct" class="table table-bordered table-striped w-100">
-        <thead>
-            <tr>
-                <th width="10px">No</th>
-                <th>Nama</th>
-                <th>Kategori</th>
-                <th>Harga</th>
-                <th>Stok</th>
-                <th width="50px">Created_by</th>
-                <th>Created_at</th>
-                <th width="125px">Aksi</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    
 </div>
 
 <!-- MODAL FORM-->
@@ -140,16 +195,8 @@
     </div>
   </div>
 </div>
-<?= $this->endSection(); ?>
 
-<?= $this->section('js'); ?>
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="<?= base_url('assets/js/select2.min.js') ?>"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<?= $this->include('template/v_footer') ?>
 <script>
 const printPdfBaseUrl = "<?= site_url('products/printPdf') ?>";
 let currentFromDate = '';
@@ -161,7 +208,7 @@ let isExporting = false;
 let exportBtnText = $('#btnExportExcel').text();
 let exportTimeout = null;
 let isUploadCanceled = false; 
-$(function () {
+$(document).ready(function () {
     initCategorySelect2Filter();
     tbl = $('#tblProduct').DataTable({
         processing: true,
@@ -690,5 +737,13 @@ function uploadForm(productId, productName) {
         }
     });
 }
+
+function setupTable(reset = '') {
+    if (reset === 'reset') {
+        $('#fromdate').val("<?= date('Y-m-01') ?>");
+        $('#todate').val("<?= date('Y-m-t') ?>");
+        $('#category').val(null).trigger('change');
+    } 
+    tbl.ajax.reload();
+}
 </script>
-<?= $this->endSection() ?>

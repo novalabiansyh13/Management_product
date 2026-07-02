@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('template/main') ?>
 <?= $this->section('css'); ?>
 <link rel="stylesheet" href="<?= base_url('assets/css/select2.min.css') ?>">
 <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
