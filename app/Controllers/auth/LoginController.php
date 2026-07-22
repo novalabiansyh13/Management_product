@@ -19,7 +19,7 @@
             return view('auth/login');
         }
         
-public function auth() 
+        public function auth() 
         {
             $username = $this->getPost('username');
             $password = $this->getPost('password');
